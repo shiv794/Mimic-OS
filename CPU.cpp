@@ -1,36 +1,36 @@
+
 #include "CPU.h"
 #include <iostream>
+
 using namespace std;
 
 CPU::CPU() {
     currentProcess = nullptr;
     busy = false;
+
+    lastProcessID = -1;
+    lastProcessName = "None";
+    lastActivity = "No process executed yet";
 }
 
 void CPU::executeProcess(Process* process) {
-
-    if (process == nullptr)
+    if (process == nullptr) {
         return;
+    }
 
     currentProcess = process;
     busy = true;
 
-    process->setState("Running");
+    lastProcessID = process->getPID();
+    lastProcessName = process->getName();
+    lastActivity = "Executed process " + lastProcessName;
 
-    cout << "\nCPU is executing Process P"
-         << process->getPID() << endl;
+    cout << "\n[CPU] Executing Process: "
+         << lastProcessName
+         << " (PID: " << lastProcessID << ")\n";
 }
 
 void CPU::stopProcess() {
-
-    if (currentProcess != nullptr) {
-
-        cout << "CPU finished Process P"
-             << currentProcess->getPID() << endl;
-
-        currentProcess->setState("Terminated");
-    }
-
     currentProcess = nullptr;
     busy = false;
 }
@@ -40,17 +40,24 @@ bool CPU::isBusy() const {
 }
 
 void CPU::displayStatus() const {
+    cout << "\n========== CPU STATUS ==========\n";
 
-    cout << "\nCPU STATUS \n";
-
-    if (busy) {
-        cout << "CPU Status: BUSY\n";
-        cout << "Running Process: P"
-             << currentProcess->getPID() << endl;
+    if (busy && currentProcess != nullptr) {
+        cout << "Current State  : BUSY\n";
+        cout << "Current Process: "
+             << currentProcess->getName()
+             << " (PID: " << currentProcess->getPID() << ")\n";
+    } else {
+        cout << "Current State  : IDLE\n";
+        cout << "Current Process: None\n";
     }
-    else {
-        cout << "CPU Status: IDLE\n";
+
+    cout << "Last Executed  : " << lastProcessName << "\n";
+
+    if (lastProcessID != -1) {
+        cout << "Last Process PID: " << lastProcessID << "\n";
     }
 
-    cout << "\n";
+    cout << "Last Activity  : " << lastActivity << "\n";
+    cout << "================================\n";
 }
